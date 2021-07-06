@@ -165,7 +165,7 @@ def images(G,device,inputs,space,truncation_psi,label,noise_mode,outdir,start=No
               i = torch.from_numpy(i).unsqueeze(0).to(device)
             img = G.synthesis(i, noise_mode=noise_mode, force_fp32=True)
         img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
-        PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/frame{idx:04d}.png')
+        PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/frame{idx:04d}.jpg')
 
 def interpolate(G,device,projected_w,seeds,random_seed,space,truncation_psi,label,frames,noise_mode,outdir,interpolation,easing,diameter,start=None,stop=None):
     if(interpolation=='noiseloop' or interpolation=='circularloop'):
@@ -252,7 +252,7 @@ def truncation_traversal(G,device,z,label,start,stop,increment,noise_mode,outdir
         
         img = G(z, label, truncation_psi=trunc, noise_mode=noise_mode)
         img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
-        PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/frame{count:04d}.png')
+        PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/frame{count:04d}.jpg')
 
         trunc+=increment
         count+=1
@@ -404,7 +404,7 @@ def generate_images(
         for idx, w in enumerate(ws):
             img = G.synthesis(w.unsqueeze(0), noise_mode=noise_mode)
             img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
-            img = PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/proj{idx:02d}.png')
+            img = PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/proj{idx:02d}.jpg')
         return
 
     # Labels.
@@ -428,7 +428,7 @@ def generate_images(
             z = torch.from_numpy(np.random.RandomState(seed).randn(1, G.z_dim)).to(device)
             img = G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
             img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
-            PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/{filename}{seed:04d}.png')
+            PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/{filename}{seed:04d}.jpg')
 
     elif(process=='interpolation' or process=='interpolation-truncation'):
         # create path for frames
@@ -448,7 +448,7 @@ def generate_images(
             interpolate(G,device,projected_w,seeds,random_seed,space,truncation_psi,label,frames,noise_mode,dirpath,interpolation,easing,diameter)
 
         # convert to video
-        cmd=f'ffmpeg -y -r {fps} -i {dirpath}/frame%04d.png -vcodec libx264 -pix_fmt yuv420p {outdir}/{vidname}.mp4'
+        cmd=f'ffmpeg -y -r {fps} -i {dirpath}/frame%04d.jpg -vcodec libx264 -pix_fmt yuv420p {outdir}/{vidname}.mp4'
         subprocess.call(cmd, shell=True)
 
     elif(process=='truncation'):
@@ -467,7 +467,7 @@ def generate_images(
         truncation_traversal(G,device,seeds,label,start,stop,increment,noise_mode,dirpath)
 
         # convert to video
-        cmd=f'ffmpeg -y -r {fps} -i {dirpath}/frame%04d.png -vcodec libx264 -pix_fmt yuv420p {outdir}/{vidname}.mp4'
+        cmd=f'ffmpeg -y -r {fps} -i {dirpath}/frame%04d.jpg -vcodec libx264 -pix_fmt yuv420p {outdir}/{vidname}.mp4'
         subprocess.call(cmd, shell=True)
 
 #----------------------------------------------------------------------------
