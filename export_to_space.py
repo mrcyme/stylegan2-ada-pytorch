@@ -14,7 +14,7 @@ SECRET_KEY = keys["SECRET_KEY"]
 @click.pass_context
 @click.option('--directory', 'local_directory', help='local directory', required=True)
 @click.option('--bucket', 'bucket', help='space bucket', required=True)
-@click.option('--destination', thelp='destination file', required=True)
+@click.option('--destination', help='destination file', required=True)
 def export_to_space(
     ctx: click.Context,
     local_directory: str,
